@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Text;
 
 namespace DecisionTree
@@ -14,12 +15,17 @@ namespace DecisionTree
         /// <summary>
         /// 决策属性类型
         /// </summary>
-        public Type Attribute { get; set; }
+        public PropertyInfo Attribute { get; set; }
+
+        /// <summary>
+        /// 结果,结果和Childrens只会有其一
+        /// </summary>
+        public R Result { get; set; }
 
         /// <summary>
         /// 决策属性可取值节点
         /// </summary>
-        public TreeAttributeNode<T,R> Childrens { get; set; }
+        public List<TreeAttributeNode<T, R>> Childrens { get; set; }
     }
 
 
@@ -33,6 +39,8 @@ namespace DecisionTree
         /// 决策结果
         /// </summary>
         public R Result { get; set; }
+
+        public object AttributeValue { get; set; }
 
         /// <summary>
         /// 决策节点
