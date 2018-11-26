@@ -6,6 +6,9 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\ANNS\ANNS.csproj" />
+    <ProjectReference Include="..\Common\Common.csproj" />
+    <ProjectReference Include="..\ConceptLearning\ConceptLearning.csproj" />
     <ProjectReference Include="..\DecisionTree\DecisionTree.csproj" />
   </ItemGroup>
 

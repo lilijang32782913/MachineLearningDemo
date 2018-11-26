@@ -1,4 +1,5 @@
 ﻿using System;
+using ANNS;
 using DecisionTree;
 
 namespace ML1
@@ -7,8 +8,9 @@ namespace ML1
     {
         static void Main(string[] args)
         {
-            new ID3().Test();
+            //new ID3().Test();
 
+            new Perceptron().Test();
 
             Console.ReadLine();
         }

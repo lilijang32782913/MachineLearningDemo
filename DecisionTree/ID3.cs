@@ -66,6 +66,10 @@ namespace DecisionTree
             Console.WriteLine("InformationGain:[Humidity]" + InformationGain(examples, modelType.GetProperty(nameof(Humidity)), resultProp));
             Console.WriteLine("InformationGain:[Wind]" + InformationGain(examples, modelType.GetProperty(nameof(Wind)), resultProp));
             Console.WriteLine("InformationGain:[Temperature]" + InformationGain(examples, modelType.GetProperty(nameof(Temperature)), resultProp));
+
+            var attributes = typeof(Playball).GetProperties().Where(i=>i.Name!=nameof(Playball.Play)).ToList();
+            var result = Train(examples, null, attributes);
+            Console.WriteLine(result);
         }
 
         /// <summary>
@@ -74,8 +78,9 @@ namespace DecisionTree
         /// <param name="Examples">Examples即训练样例集。T</param>
         /// <param name="Target_attribute">arget_attribute是这棵树要预测的目标属性。</param>
         /// <param name="Attributes">Attributes是除目标属性外供学习到的决策树测试的属性列表。</param>
-        public TreeDecisionNode<Playball, bool?> Train(List<Playball> Examples, PropertyInfo Target_attribute, List<PropertyInfo> Attributes)
+        public virtual TreeDecisionNode<Playball, bool?> Train(List<Playball> Examples, PropertyInfo Target_attribute, List<PropertyInfo> Attributes)
         {
+            var resultProp = typeof(Playball).GetProperty(nameof(Playball.Play));
             /*
              创建树的Root结点
              如果Examples都为正，那么返回label =+ 的单结点树Root
@@ -110,7 +115,7 @@ namespace DecisionTree
             //如果Attributes为空，那么返回单结点树Root，label=Examples中最普遍的Target_attribute值
             if (Attributes == null || Attributes.Count == 0)
             {
-                root.Attribute = this.GetGeneralProp(Examples, nameof(Playball.Play));
+                root.Result = Examples.GroupBy(i => i.Play).OrderBy(i => i.Count()).Last().Key;
             }
             /*
               A←Attributes中分类Examples能力最好的属性
@@ -124,7 +129,7 @@ namespace DecisionTree
             {
                 //A←Attributes中分类Examples能力最好的属性
                 //Root的决策属性←A
-                root.Attribute = this.GetGeneralProp(Examples, nameof(Playball.Play));
+                root.Attribute = this.GetMaxGain(Examples, Attributes, resultProp);
 
                 //对于A的每个可能值v,在Root下加一个新的分支对应测试A= vi
                 var enums = Enum.GetValues(root.Attribute.PropertyType);
@@ -144,14 +149,13 @@ namespace DecisionTree
                     {
                         children.DecisionNode = new TreeDecisionNode<Playball, bool?>()
                         {
-                            Attribute = this.GetGeneralProp(Examples, nameof(Playball.Play))
+                            Result = Examples.GroupBy(i => i.Play).OrderBy(i => i.Count()).Last().Key
                         };
                     }
                     //否则在这个新分支下加一个子树ID3（ivExamples, Target_attribute, Attributes -{ A}）
                     else
                     {
-                        Attributes.Remove(root.Attribute);
-                        children.DecisionNode = Train(viExamples, null, Attributes);
+                        children.DecisionNode = Train(viExamples, null, Attributes.Where(i=>i!= root.Attribute).ToList());
                     }
                 }
             }
@@ -159,29 +163,6 @@ namespace DecisionTree
             // 结束
             // 返回Root
             return root;
-        }
-
-        /// <summary>
-        /// 获取最普遍的属性
-        /// </summary>
-        /// <param name="Examples"></param>
-        /// <returns></returns>
-        public PropertyInfo GetGeneralProp<T>(List<T> Examples,params string[] ignoreFileds)
-        {
-            var attributes = typeof(T).GetProperties().Where(i => !ignoreFileds.Contains(i.Name)).ToList();
-            var result = attributes.First();
-            var valueCount = 0;
-            attributes.ForEach(a => {
-                Examples.GroupBy(i => a).ToList().ForEach(g => {
-                    if (g.Count() >= valueCount)
-                    {
-                        valueCount = 0;
-                        result = g.Key;
-                    }
-                });
-            });
-
-            return result;
         }
 
         /// <summary>
