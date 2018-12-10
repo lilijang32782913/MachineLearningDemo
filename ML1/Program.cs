@@ -10,7 +10,7 @@ namespace ML1
         {
             //new ID3().Test();
 
-            new Perceptron().Test();
+            new GradientDescent().Test();
 
             Console.ReadLine();
         }

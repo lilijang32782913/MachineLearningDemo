@@ -5,12 +5,15 @@ using System.Linq;
 namespace ANNS
 {
     /*
-     感知器以一个实数值向量作为输入，计算这些输入的线性组合，然后如果结果大于某个阈值就输出1，否则输出-1
+     
+        感知器以一个实数值向量作为输入，计算这些输入的线性组合，然后如果结果大于某个阈值就输出1，否则输出-1
+
+        ∂ 偏导
     */
     /// <summary>
-    /// 感知器
+    /// 梯度下降感知器
     /// </summary>
-    public class Perceptron
+    public class GradientDescent
     {
         /// <summary>
         /// 训练结果的权值[w1,w2...wi]
@@ -52,7 +55,7 @@ namespace ANNS
             }
 
             //训练
-            this.GradientDescent(demos);
+            this.Train(demos);
         }
 
         /// <summary>
@@ -103,7 +106,7 @@ namespace ANNS
         /// </summary>
         /// <param name="training_examples">训练示例</param>
         /// <param name="n">训练速度(过大会导致训练结果不对)</param>
-        public void GradientDescent(List<ExampleInfo> training_examples, double n = 0.0001)
+        public void Train(List<ExampleInfo> training_examples, double n = 0.0001)
         {
             /*
              初始化每个wi为某个小的随机值
@@ -122,32 +125,36 @@ namespace ANNS
                 return;
             }
 
+            //随机生成初始权值队列
             this.W = new double[training_examples.First().X.Length];
             var random = new Random();
             for (int i = 0; i < this.W.Length; i++)
             {
-                this.W[i] = random.Next(1, 10);
+                this.W[i] = random.Next(1, 10) * 0.1;
             }
+            var deltaW = new double[this.W.Length];
 
             //累计误差值小于某个阈值跳出
-            var deltaW = 1d;
-            while (deltaW >= 0.00000001)
+            var deltaE = 1d;
+            while (deltaE >= 0.00000000001)
             {
-                for (int i = 0; i < training_examples.Count; i++)
+                foreach (var example in training_examples)
                 {
-                    var item = training_examples[i];
-                    for (int j = 0; j < item.X.Length; j++)
+                    //对于训练样例training_examples中的每个<x,t>，做：
+                    for (int i = 0; i < example.X.Length; i++)
                     {
-                        var o = GetValue(item.X);
-                        var xi = item.X[j];
-                        this.W[j] += n * (item.T - o) * xi;
+                        //把实例x输入到此单元，计算输出o
+                        var o = GetValue(example.X);
+                        //对于线性单元的每个权wi ，做 Δwi ←Δwi + η(t - o)xi
+                        deltaW[i] += n * (example.T - o) * example.X[i];
+                        //对于线性单元的每个权wi ，做  wi← wi + Δwi
+                        this.W[i] += deltaW[i];
                     }
-                    
                 }
-                deltaW = GetEw(training_examples);
+                deltaE = GetEw(training_examples);
                 //打印计算步骤
                 Console.WriteLine($"{this.W[0]},{this.W[1]},{this.W[2]},{this.W[3]},{this.W[4]},{this.W[5]}");
-                Console.WriteLine(deltaW);
+                Console.WriteLine(deltaE);
             }
         }
     }

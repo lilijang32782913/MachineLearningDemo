@@ -13,8 +13,20 @@ namespace ANNS
         {
             /*
              σ(sigma)
-             o=σ(w*x)
+             输出o=σ(w*x)
+             
+            其中 σ(y)=1/(1 + e^-y)
+
              */
+        }
+
+        /// <summary>
+        /// σ(sigma)，逻辑函数,返回0~1，随输出单调递增
+        /// </summary>
+        /// <returns></returns>
+        public double Sigma()
+        {
+            return 0;
         }
     }
 }
