@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Runtime.InteropServices;
+using System.Text;
 using ANNS;
 using DecisionTree;
+using ML1.LeetCode;
 
 namespace ML1
 {
@@ -10,7 +13,8 @@ namespace ML1
         {
             //new ID3().Test();
 
-            new GradientDescent().Test();
+
+            OneAndZero.Test();
 
             Console.ReadLine();
         }

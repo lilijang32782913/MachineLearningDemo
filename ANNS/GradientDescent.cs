@@ -74,7 +74,7 @@ namespace ANNS
         }
 
         /// <summary>
-        /// 获取感知器对实例的误差
+        /// 获取感知器对实例集合的整体误差
         /// </summary>
         /// <param name="example"></param>
         /// <returns></returns>

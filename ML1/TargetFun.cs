@@ -62,7 +62,6 @@ namespace ML1
             Vtrain(b)<-Vnear(successor(b))
              */
 
-
             return 0;
         }
 
